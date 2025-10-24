@@ -13,11 +13,59 @@ To write a YACC program to recognize a valid variable which starts with a letter
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter a statement as input and the valid variables are identified as output.
 # PROGRAM
+Program name:ex4.l
 ```
-
+%{
+/* This LEX program returns the tokens for the Expression */
+#include"y.tab.h"
+%}
+%%
+"int" {return INT;}
+"float" {return FLOAT;}
+"double" {return DOUBLE;}
+[a-zA-Z][0-9] {printf("\nIdentifier is %s",yytext);
+return ID;
+}
+. return yytext[0];
+\n return 0;
+%%
+int yywrap()
+{
+return 1;
+}
+```
+Program name:ex4.y
+```
+%{
+#include<stdio.h>
+/* This YACC program is for recognising the Expression*/
+ %}
+%token ID INT FLOAT DOUBLE
+%%
+D: T L
+;
+L: L,ID
+| ID
+;
+T: INT
+| FLOAT
+| DOUBLE
+;
+%%
+extern FILE*yyin;
+main()
+{
+do
+{
+yyparse();
+}while(!feof(yyin));
+}
+yyerror(char*s)
+{
+}
 ```
 # Output
-<img width="1915" height="852" alt="image" src="https://github.com/user-attachments/assets/5751ba1f-0c32-4ae0-93c2-725be28671e7" />
+<img width="902" height="687" alt="image" src="https://github.com/user-attachments/assets/d467b6fc-0fb5-44cc-b64b-7091ac7f4cc1" />
 
 # Result
 A YACC program to recognize a valid variable which starts with a letter followed by any number of letters or digits is executed successfully and the output is verified.
