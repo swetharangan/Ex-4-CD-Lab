@@ -15,56 +15,71 @@ To write a YACC program to recognize a valid variable which starts with a letter
 7.	Compile these with the C compiler as gcc lex.yy.c y.tab.c
 8.	Enter a statement as input and the valid variables are identified as output.
 # PROGRAM
+exp4.l
+
+```
 
 %{
-/* This LEX program returns the tokens for the Expression */
-#include"y.tab.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+extern int yylex();
+void yyerror(const char *msg);
+
 %}
-%%
-"int" {return INT;}
-"float" {return FLOAT;}
-"double" {return DOUBLE;}
-[a-zA-Z]*[0-9]* {printf("\nIdentifier is %s",yytext);
-return ID;
+
+%union {
+    char *str;
 }
-. return yytext[0];
-\n return 0;
+
+%token <str> IDENTIFIER
+
 %%
-int yywrap()
-{
-return 1;
+start:
+    IDENTIFIER '\n' {
+        printf("Valid variable: %s\n", $1);
+        free($1);  // clean up strdup memory
+    }
+    ;
+%%
+
+int main() {
+    printf("Enter a variable name:\n");
+    return yyparse();
 }
-Program name:ex4.y
+
+void yyerror(const char *msg) {
+    printf("Invalid variable name\n");
+}
+
+```
+
+
+exp4.y
+
+```
+
 %{
-#include<stdio.h>
-/* This YACC program is for recognising the Expression*/
- %}
-%token ID INT FLOAT DOUBLE
+#include "y.tab.h"
+#include <string.h>
+%}
+
 %%
-D: T L
-;
-L: L,ID
-| ID
-;
-T: INT
-| FLOAT
-| DOUBLE
-;
+[a-zA-Z][a-zA-Z0-9]*    { yylval.str = strdup(yytext); return IDENTIFIER; }
+\n                      { return '\n'; }
+.                       { return yytext[0]; }
 %%
-extern FILE*yyin;
-main()
-{
-do
-{
-yyparse();
-}while(!feof(yyin));
+
+int yywrap() {
+    return 1;
 }
-yyerror(char*s)
-{
-}
+
+```
 
 # Output
-![375297684-e96d9e10-5302-4a7f-b640-dd0d63148840](https://github.com/user-attachments/assets/c32640c0-ddc9-49f7-ae77-cba3b53faa2d)
+
+<img width="1880" height="807" alt="image" src="https://github.com/user-attachments/assets/96821c83-889b-4c1a-a9e9-73860cd14d41" />
 
 
 # Result
